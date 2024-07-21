@@ -27,31 +27,21 @@ typedef std::unordered_map<char , int> mci;
 typedef std::unordered_map<char , ll> mcll;
 
 ll N;
-bool vis[MAXN];
-vll dist(MAXN);
-std::vector<pllll> adj_dijkstra[MAXN]; //{v, w}
+bool seen[MAXN];
+vll dist(MAXN), adj[MAXN];
 
-void dijkstra(int s) {
-    FOR(i, 0, N) {
-        dist[i] = INF;
-        vis[i] = false;
-    }
-    std::priority_queue<pllll> q; //{w, v}
-    dist[s] = 0;
-    q.push({0, s});
+void bfs(int x) {
+    std::queue<ll> q;
+    seen[x] = true;
+    dist[x] = 0;
+    q.push(x);
     while(!q.empty()) {
-        ll u = q.top().se; q.pop();
-        if(vis[u]) continue;
-        vis[u] = true;
-        for(auto pr : adj_dijkstra[u]) {
-            ll v, w;
-            std::tie(v, w) = pr;
-            if(vis[v]) continue;
-
-            if(dist[u] + w < dist[v]) {
-                dist[v] = dist[u] + w;
-                q.push({-dist[v], v});
-            }
+        ll u = q.front(); q.pop();
+        for(auto v : adj[u]) {
+            if(seen[v]) continue;
+            seen[v] = true;
+            dist[v] = dist[u] + 1;
+            q.push(v);
         }
     }
 }

@@ -27,33 +27,39 @@ typedef std::unordered_map<char , int> mci;
 typedef std::unordered_map<char , ll> mcll;
 
 ll N;
-bool vis[MAXN];
-vll dist(MAXN);
-std::vector<pllll> adj_dijkstra[MAXN]; //{v, w}
+vll adj[MAXN];
 
-void dijkstra(int s) {
+void toposort() {
+    vll indegree(N);
     FOR(i, 0, N) {
-        dist[i] = INF;
-        vis[i] = false;
-    }
-    std::priority_queue<pllll> q; //{w, v}
-    dist[s] = 0;
-    q.push({0, s});
-    while(!q.empty()) {
-        ll u = q.top().se; q.pop();
-        if(vis[u]) continue;
-        vis[u] = true;
-        for(auto pr : adj_dijkstra[u]) {
-            ll v, w;
-            std::tie(v, w) = pr;
-            if(vis[v]) continue;
-
-            if(dist[u] + w < dist[v]) {
-                dist[v] = dist[u] + w;
-                q.push({-dist[v], v});
-            }
+        for(auto it : adj[i]){
+            indegree[it]++;
         }
     }
+
+    std::queue<ll> q;
+    FOR(i, 0, N) {
+        if(indegree[i] == 0)
+            q.push(i);
+    }
+
+    vll result;
+    while(!q.empty()) {
+        ll node = q.front(); q.pop();
+        result.pb(node);
+
+        for(auto it : adj[node]){
+            indegree[it]--;
+
+            if(indegree[it] == 0)
+                q.push(it);
+        }
+    }
+
+    if(result.size() != N)
+        std::cout<<"Cycle Detected";
+    else
+        std::cout<<"No Cycle";
 }
 
 int main()
